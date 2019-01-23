@@ -163,7 +163,7 @@ def botMain (b):
     me = b.me ()
     print "yes"
     print "the python marine id is", me
-    you = findAll ()
+    you = findYou (b)
 
     while True:
        # moveTowards (you)
