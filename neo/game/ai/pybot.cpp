@@ -62,7 +62,7 @@ Author:  Gaius Mulley  <gaius@gnu.org>
 #include "Game_local.h"
 
 const bool debugging = true;
-const bool protocol_debugging = false;
+const bool protocol_debugging = true;
 
 #define S(x) #x
 #define S_(x) S(x)
@@ -124,13 +124,14 @@ class item
   int stepForward (int vel, int dist);
   int stepRight (int vel, int dist);
   int stepVec (int velforward, int velright, int dist);
+  int stepUp (int vel, int dist);
   int start_firing (void);
   int stop_firing (void);
   int ammo (void);
   int weapon (int new_weapon);
   int health (void);
   int angle (void);
-  void reload_weapon (void);
+  int reload_weapon (void);
   bool aim (idEntity *enemy);
   int turn (int angle, int angle_vel);
   idEntity *getIdEntity (void);
@@ -293,6 +294,24 @@ int item::stepVec (int velforward, int velright, int dist)
   return 0;
 }
 
+/*
+ *  stepUp - step forward at velocity, vel, and over distance, dist.
+ */
+
+int item::stepUp (int vel, int dist)
+{
+  switch (kind)
+    {
+#if 0
+    case item_monster:
+      return idai->StepDirection (vel, dist);
+#endif
+    case item_player:
+      return idplayer->stepUp (vel, dist);
+    }
+  return 0;
+}
+
 
 /*
  *  aim - aim our weapon at enemy.
@@ -446,9 +465,19 @@ int item::angle (void)
  *  reload_weapon
  */
 
-void item::reload_weapon (void)
+int item::reload_weapon (void)
 {
-
+  switch (kind)
+    {
+    case item_monster:
+      assert (false);
+      return 0;  // ignore
+      break;
+    case item_player:
+      return idplayer->reload_weapon ();
+    }
+  assert (false);
+  return 0;
 }
 
 
@@ -501,6 +530,7 @@ class dict
   int stepForward (int id, int vel, int units);
   int stepRight (int id, int vel, int dist);
   int stepVec (int id, int velforward, int velright, int dist);
+  int stepUp (int id, int vel, int dist);
   int start_firing (int id);
   int stop_firing (int id);
   int reload_weapon (int id);
@@ -642,6 +672,26 @@ int dict::stepForward (int id, int vel, int dist)
 int dict::stepVec (int id, int velforward, int velright, int dist)
 {
   return entry[id]->stepVec (velforward, velright, dist);
+}
+
+/*
+ *  stepUp - crouch or jump
+ */
+
+int dict::stepUp (int id, int vel, int dist)
+{
+  return entry[id]->stepUp (vel, dist);
+}
+
+/*
+ *  reload_weapon - reload the current weapon and return the
+ *                  ammo available for the current weapon.
+ */
+
+
+int dict::reload_weapon (int id)
+{
+  return entry[id]->reload_weapon ();
 }
 
 
@@ -1673,6 +1723,8 @@ void pyBotClass::interpretRemoteProcedureCall (char *data)
     rpcGetEntityPos (&data[15]);
   else if (idStr::Cmpn (data, "change_weapon ", 14) == 0)
     rpcChangeWeapon (&data[14]);
+  else if (idStr::Cmpn (data, "step_up ", 8) == 0)
+    rpcStepUp (&data[8]);
   else
     {
       gameLocal.Printf ("data = \"%s\", len (data) = %d\n", data, (int) strlen (data));
@@ -1902,6 +1954,36 @@ void pyBotClass::rpcStepVec (char *data)
   state = toWrite;
 }
 
+/*
+ *  rpcStepUp - step forward along a vector.
+ *               The parameter, data, contains three parameters:
+ *               velocity forward, velocity right and distance.
+ */
+
+void pyBotClass::rpcStepUp (char *data)
+{
+  char buf[1024];
+  int velup = 0;
+  int dist = 0;
+
+  if (protocol_debugging)
+    gameLocal.Printf ("rpcStepUp (%s) call by python\n", data);
+
+  if (rpcId > 0)
+    {
+      velup = atoi (data);
+      char *p = index (data, ' ');
+      if ((p == NULL) || ((*p) == '\0'))
+	dist = 0;
+      else
+	dist = atoi (p);
+      dist = dictionary->stepUp (rpcId, velup, dist);
+    }
+  idStr::snPrintf (buf, sizeof (buf), "%d\n", dist);
+  buffer.pyput (buf);
+  state = toWrite;
+}
+
 
 /*
  *  rpcAim - aim the weapon at, id.
@@ -2109,7 +2191,7 @@ void pyBotClass::rpcReloadWeapon (void)
     gameLocal.Printf ("rpcReloadWeapon call by python\n");
 
   if (rpcId > 0)
-    ammo = dictionary->ammo (rpcId);   // --fixme-- this should call something else
+    ammo = dictionary->reload_weapon (rpcId);   // --fixme-- this should call something else
   else
     ammo = 0;
 

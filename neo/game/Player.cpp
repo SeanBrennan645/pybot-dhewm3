@@ -1193,7 +1193,27 @@ int idPlayer::setRight (int vel, int dist)
   gameLocal.usercmds[entityNumber] = usercmd;
   return old;
 }
+/*
+===============
+idPlayer::stepUp (crouch or jump)
+===============
+*/
+int idPlayer::stepUp (int vel, int dist)
+{
+  int old = (int) usercmd.upmove;
 
+  // gamelocal.Printf( "stepUp %d %d0, vel, dist");
+  usercmd.upmove = (signed char) vel;
+  usercmd.forwardmove =0;
+  usercmd.rightmove = 0;
+  buttonMask = 0;
+  buttonMask |= BUTTON_RUN;
+  pulseCount.set_run (dist);
+  usercmd.buttons |= BUTTON_RUN;
+  gameLocal.usercmds[entityNumber] = usercmd;
+
+  return old;
+}
 
 int idPlayer::setForward (int vel, int dist)
 {
@@ -6403,9 +6423,11 @@ void idPlayer::Think( void ) {
 		    buttonMask &= (~ BUTTON_RUN);
 		    usercmd.rightmove = 0;
 		    usercmd.forwardmove = 0;
+		    usercmd.upmove = 0; //stepUp stuff
 		    gameLocal.usercmds[entityNumber].rightmove = 0;
 		    gameLocal.usercmds[entityNumber].forwardmove = 0;
 		    gameLocal.usercmds[entityNumber].buttons = 0;
+		    gameLocal.usercmds[entityNumber].upmove = 0;
 		  }
 	      }
 	    pulseCount.inc_angle (this);
@@ -6787,6 +6809,25 @@ int idPlayer::ChangeWeapon (int new_weapon)
 	  return inventory.ammo[currentWeapon];
 	}
     }
+  return -1;
+}
+
+ /*
+===============
+idPlayer::reload_weapon
+===============
+*/
+int idPlayer::reload_weapon (void) {
+  if ( gameLocal.isClient ) {
+    return -1;
+  }
+  if ( spectating || gameLocal.inCinematic || influenceActive ) {
+    return -1;
+  }
+  if ( weapon.GetEntity() && weapon.GetEntity()->IsLinked() ) {
+    weapon.GetEntity()->Reload ();
+    return inventory.ammo[currentWeapon];
+  }
   return -1;
 }
 

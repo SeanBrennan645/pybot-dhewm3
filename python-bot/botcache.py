@@ -142,6 +142,14 @@ class cache:
         return self._basic.right (vel, dist)
 
     #
+    # stepup -
+    #
+
+    def stepup (self, velup, dist):
+        self.delpos (self.me ())
+        return self._basic.stepup (velup, dist)
+
+    #
     #  forward - step forward at velocity, vel, for dist, units.
     #
 
@@ -173,6 +181,18 @@ class cache:
         return self._basic.stepvec (velforward, velright, dist)
 
     #
+    #  reload_weapon - reload the current weapon
+    #                  It returns the amount of ammo left.
+    #
+
+
+    def reload_weapon (self):
+        return self._basic.reload_weapon ()
+
+    def changeWeapon (self, n):
+        return self._basic.changeWeapon(n)
+
+    #
     #  sync - wait for any event to occur.
     #         The event will signify the end of
     #         move, fire, turn, reload action.
@@ -196,9 +216,9 @@ class cache:
     #                 It returns the amount of ammo left.
     #
 
-    def start_firing (self):
+    def startFiring (self):
         self.delammo ()
-        return self._basic.start_firing ()
+        return self._basic.startFiring ()
 
     #
     #  stop_firing - stop firing weapon

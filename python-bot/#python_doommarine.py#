@@ -42,6 +42,11 @@ def change ():
             print "dhewm3 returns", b.changeWeapon (w)
             time.sleep (3)
 
+def changeWeaponTo (weapon):
+    ammo = b.changeWeapon (weapon)
+    return ammo
+                
+
 #fire function
 def fire ():
         b.startFiring ()
@@ -99,8 +104,8 @@ def findAll ():
         print "the location of python bot", me, "is", b.getpos (me)
         if i != me:
             b.aim (i)
-           # moveTowards (i)
-            time.sleep (3)
+            moveTowards (i)
+            time.sleep (5)
 
 def findYou (b):
     for i in b.allobj ():
@@ -163,14 +168,16 @@ def botMain (b):
     me = b.me ()
     print "yes"
     print "the python marine id is", me
-    you = findAll ()
-
+    you = findYou (b)
+    weapon = 2
+    changeWeaponTo(weapon)
     while True:
        # moveTowards (you)
-      b.face (you)
+       # b.face (you)
     # change ()
-      fire ()
+    # fire ()
     # test_crouch_jump (b)
+        b.startFiring(weapon)
        # circle ()
        # b.reload_weapon ()
         #time.sleep (3)

@@ -31,7 +31,7 @@ from botutils import *
 from socket import *
 
 superServer = 7000
-debug_protocol = False
+debug_protocol = True
 debug_turn = False
 
 
@@ -282,6 +282,21 @@ class basic:
         return int (l)
 
     #
+    # stepup -
+    #
+
+    def stepup (self, velocity, dist):
+        l = "step_up %d %d\n" % (velocity, dist)
+        if debug_protocol:
+            print "requesting a", l
+        self.s.send (l)
+        l = self.getLine ()
+        print "got line"
+        if debug_protocol:
+            print "doom returned", l
+        return int (l)
+
+    #
     #  forward - step forward at velocity, vel, for dist, units.
     #
 
@@ -404,11 +419,11 @@ class basic:
 
 
     #
-    #  reloadWeapon - reload the current weapon
+    #  reload_weapon - reload the current weapon
     #                 It returns the amount of ammo left.
     #
 
-    def reloadWeapon (self):
+    def reload_weapon (self):
         if debug_protocol:
             print "requesting to reload weapon"
         self.s.send ("reload_weapon\n")

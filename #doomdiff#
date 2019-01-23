@@ -1,0 +1,488 @@
+diff --git a/neo/game/Player.cpp b/neo/game/Player.cpp
+index 8d42dce..0ae221b 100644
+--- a/neo/game/Player.cpp
++++ b/neo/game/Player.cpp
+@@ -1193,7 +1193,27 @@ int idPlayer::setRight (int vel, int dist)
+   gameLocal.usercmds[entityNumber] = usercmd;
+   return old;
+ }
++/*
++===============
++idPlayer::stepUp (crouch or jump)
++===============
++*/
++int idPlayer::stepUp (int vel, int dist)
++{
++  int old = (int) usercmd.upmove;
+ 
++  // gamelocal.Printf( "stepUp %d %d0, vel, dist");
++  usercmd.upmove = (signed char) vel;
++  usercmd.forwardmove =0;
++  usercmd.rightmove = 0;
++  buttonMask = 0;
++  buttonMask |= BUTTON_RUN;
++  pulseCount.set_run (dist);
++  usercmd.buttons |= BUTTON_RUN;
++  gameLocal.usercmds[entityNumber] = usercmd;
++
++  return old;
++}
+ 
+ int idPlayer::setForward (int vel, int dist)
+ {
+@@ -6403,9 +6423,11 @@ void idPlayer::Think( void ) {
+ 		    buttonMask &= (~ BUTTON_RUN);
+ 		    usercmd.rightmove = 0;
+ 		    usercmd.forwardmove = 0;
++		    usercmd.upmove = 0; //stepUp stuff
+ 		    gameLocal.usercmds[entityNumber].rightmove = 0;
+ 		    gameLocal.usercmds[entityNumber].forwardmove = 0;
+ 		    gameLocal.usercmds[entityNumber].buttons = 0;
++		    gameLocal.usercmds[entityNumber].upmove = 0;
+ 		  }
+ 	      }
+ 	    pulseCount.inc_angle (this);
+@@ -6790,6 +6812,25 @@ int idPlayer::ChangeWeapon (int new_weapon)
+   return -1;
+ }
+ 
++ /*
++===============
++idPlayer::reload_weapon
++===============
++*/
++int idPlayer::reload_weapon (void) {
++  if ( gameLocal.isClient ) {
++    return -1;
++  }
++  if ( spectating || gameLocal.inCinematic || influenceActive ) {
++    return -1;
++  }
++  if ( weapon.GetEntity() && weapon.GetEntity()->IsLinked() ) {
++    weapon.GetEntity()->Reload ();
++    return inventory.ammo[currentWeapon];
++  }
++  return -1;
++}
++
+ 
+ /*
+ ==============
+diff --git a/neo/game/Player.h b/neo/game/Player.h
+index 979dcaa..28b224a 100644
+--- a/neo/game/Player.h
++++ b/neo/game/Player.h
+@@ -588,11 +588,13 @@ public:
+ 	bool isVisible (idEntity *enemy);  // gaius
+ 	int Fire (bool firing);   // gaius
+ 	int Ammo (void);  // gaius
++	int stepUp (int vel, int dist); //Sean
+         int Turn (int angle, int angle_vel);   // gaius
+ 	int GetYaw (void);  // gaius
+ 	void doTurn (int angle);	// gaius
+ 	void select (int bitmask);  // gaius
+ 	int ChangeWeapon (int new_weapon); // gaius
++	int reload_weapon (void); //Sean
+ 	void SetSkinColor (int choice);  // gaius
+ 
+ private:
+diff --git a/neo/game/ai/pybot.cpp b/neo/game/ai/pybot.cpp
+index 12914f4..c3c8085 100644
+--- a/neo/game/ai/pybot.cpp
++++ b/neo/game/ai/pybot.cpp
+@@ -62,7 +62,7 @@ Author:  Gaius Mulley  <gaius@gnu.org>
+ #include "Game_local.h"
+ 
+ const bool debugging = true;
+-const bool protocol_debugging = false;
++const bool protocol_debugging = true;
+ 
+ #define S(x) #x
+ #define S_(x) S(x)
+@@ -124,13 +124,14 @@ class item
+   int stepForward (int vel, int dist);
+   int stepRight (int vel, int dist);
+   int stepVec (int velforward, int velright, int dist);
++  int stepUp (int vel, int dist);
+   int start_firing (void);
+   int stop_firing (void);
+   int ammo (void);
+   int weapon (int new_weapon);
+   int health (void);
+   int angle (void);
+-  void reload_weapon (void);
++  int reload_weapon (void);
+   bool aim (idEntity *enemy);
+   int turn (int angle, int angle_vel);
+   idEntity *getIdEntity (void);
+@@ -293,6 +294,24 @@ int item::stepVec (int velforward, int velright, int dist)
+   return 0;
+ }
+ 
++/*
++ *  stepUp - step forward at velocity, vel, and over distance, dist.
++ */
++
++int item::stepUp (int vel, int dist)
++{
++  switch (kind)
++    {
++#if 0
++    case item_monster:
++      return idai->StepDirection (vel, dist);
++#endif
++    case item_player:
++      return idplayer->stepUp (vel, dist);
++    }
++  return 0;
++}
++
+ 
+ /*
+  *  aim - aim our weapon at enemy.
+@@ -446,9 +465,19 @@ int item::angle (void)
+  *  reload_weapon
+  */
+ 
+-void item::reload_weapon (void)
++int item::reload_weapon (void)
+ {
+-
++  switch (kind)
++    {
++    case item_monster:
++      assert (false);
++      return 0;  // ignore
++      break;
++    case item_player:
++      return idplayer->reload_weapon ();
++    }
++  assert (false);
++  return 0;
+ }
+ 
+ 
+@@ -501,6 +530,7 @@ class dict
+   int stepForward (int id, int vel, int units);
+   int stepRight (int id, int vel, int dist);
+   int stepVec (int id, int velforward, int velright, int dist);
++  int stepUp (int id, int vel, int dist);
+   int start_firing (int id);
+   int stop_firing (int id);
+   int reload_weapon (int id);
+@@ -644,6 +674,26 @@ int dict::stepVec (int id, int velforward, int velright, int dist)
+   return entry[id]->stepVec (velforward, velright, dist);
+ }
+ 
++/*
++ *  stepUp - crouch or jump
++ */
++
++int dict::stepUp (int id, int vel, int dist)
++{
++  return entry[id]->stepUp (vel, dist);
++}
++
++/*
++ *  reload_weapon - reload the current weapon and return the
++ *                  ammo available for the current weapon.
++ */
++
++
++int dict::reload_weapon (int id)
++{
++  return entry[id]->reload_weapon ();
++}
++
+ 
+ /*
+  *  start_firing - fire the weapon.
+@@ -1673,6 +1723,8 @@ void pyBotClass::interpretRemoteProcedureCall (char *data)
+     rpcGetEntityPos (&data[15]);
+   else if (idStr::Cmpn (data, "change_weapon ", 14) == 0)
+     rpcChangeWeapon (&data[14]);
++  else if (idStr::Cmpn (data, "step_up ", 8) == 0)
++    rpcStepUp (&data[8]);
+   else
+     {
+       gameLocal.Printf ("data = \"%s\", len (data) = %d\n", data, (int) strlen (data));
+@@ -1902,6 +1954,36 @@ void pyBotClass::rpcStepVec (char *data)
+   state = toWrite;
+ }
+ 
++/*
++ *  rpcStepUp - step forward along a vector.
++ *               The parameter, data, contains three parameters:
++ *               velocity forward, velocity right and distance.
++ */
++
++void pyBotClass::rpcStepUp (char *data)
++{
++  char buf[1024];
++  int velup = 0;
++  int dist = 0;
++
++  if (protocol_debugging)
++    gameLocal.Printf ("rpcStepUp (%s) call by python\n", data);
++
++  if (rpcId > 0)
++    {
++      velup = atoi (data);
++      char *p = index (data, ' ');
++      if ((p == NULL) || ((*p) == '\0'))
++	dist = 0;
++      else
++	dist = atoi (p);
++      dist = dictionary->stepUp (rpcId, velup, dist);
++    }
++  idStr::snPrintf (buf, sizeof (buf), "%d\n", dist);
++  buffer.pyput (buf);
++  state = toWrite;
++}
++
+ 
+ /*
+  *  rpcAim - aim the weapon at, id.
+@@ -2109,7 +2191,7 @@ void pyBotClass::rpcReloadWeapon (void)
+     gameLocal.Printf ("rpcReloadWeapon call by python\n");
+ 
+   if (rpcId > 0)
+-    ammo = dictionary->ammo (rpcId);   // --fixme-- this should call something else
++    ammo = dictionary->reload_weapon (rpcId);   // --fixme-- this should call something else
+   else
+     ammo = 0;
+ 
+diff --git a/neo/game/ai/pybot.h b/neo/game/ai/pybot.h
+index 16d9fec..e3d818c 100644
+--- a/neo/game/ai/pybot.h
++++ b/neo/game/ai/pybot.h
+@@ -114,6 +114,7 @@ class pyBotClass
+   void rpcRight (char *data);
+   void rpcForward (char *data);
+   void rpcStepVec (char *data);
++  void rpcStepUp (char *data);
+   void rpcAim (char *data);
+   void rpcStartFiring (void);
+   void rpcStopFiring (void);
+diff --git a/python-bot/botbasic.py b/python-bot/botbasic.py
+index 40aa4b4..1ff6fca 100644
+--- a/python-bot/botbasic.py
++++ b/python-bot/botbasic.py
+@@ -31,7 +31,7 @@ from botutils import *
+ from socket import *
+ 
+ superServer = 7000
+-debug_protocol = False
++debug_protocol = True
+ debug_turn = False
+ 
+ 
+@@ -282,6 +282,21 @@ class basic:
+         return int (l)
+ 
+     #
++    # stepup -
++    #
++
++    def stepup (self, velocity, dist):
++        l = "step_up %d %d\n" % (velocity, dist)
++        if debug_protocol:
++            print "requesting a", l
++        self.s.send (l)
++        l = self.getLine ()
++        print "got line"
++        if debug_protocol:
++            print "doom returned", l
++        return int (l)
++
++    #
+     #  forward - step forward at velocity, vel, for dist, units.
+     #
+ 
+@@ -404,11 +419,11 @@ class basic:
+ 
+ 
+     #
+-    #  reloadWeapon - reload the current weapon
++    #  reload_weapon - reload the current weapon
+     #                 It returns the amount of ammo left.
+     #
+ 
+-    def reloadWeapon (self):
++    def reload_weapon (self):
+         if debug_protocol:
+             print "requesting to reload weapon"
+         self.s.send ("reload_weapon\n")
+diff --git a/python-bot/botcache.py b/python-bot/botcache.py
+index 59a5220..f933eb8 100644
+--- a/python-bot/botcache.py
++++ b/python-bot/botcache.py
+@@ -142,6 +142,14 @@ class cache:
+         return self._basic.right (vel, dist)
+ 
+     #
++    # stepup -
++    #
++
++    def stepup (self, velup, dist):
++        self.delpos (self.me ())
++        return self._basic.stepup (velup, dist)
++
++    #
+     #  forward - step forward at velocity, vel, for dist, units.
+     #
+ 
+@@ -173,6 +181,18 @@ class cache:
+         return self._basic.stepvec (velforward, velright, dist)
+ 
+     #
++    #  reload_weapon - reload the current weapon
++    #                  It returns the amount of ammo left.
++    #
++
++
++    def reload_weapon (self):
++        return self._basic.reload_weapon ()
++
++    def changeWeapon (self, n):
++        return self._basic.changeWeapon(n)
++
++    #
+     #  sync - wait for any event to occur.
+     #         The event will signify the end of
+     #         move, fire, turn, reload action.
+@@ -196,9 +216,9 @@ class cache:
+     #                 It returns the amount of ammo left.
+     #
+ 
+-    def start_firing (self):
++    def startFiring (self):
+         self.delammo ()
+-        return self._basic.start_firing ()
++        return self._basic.startFiring ()
+ 
+     #
+     #  stop_firing - stop firing weapon
+diff --git a/python-bot/botlib.py b/python-bot/botlib.py
+index 218a156..130d03a 100644
+--- a/python-bot/botlib.py
++++ b/python-bot/botlib.py
+@@ -34,7 +34,7 @@ from botcache import cache
+ from chvec import *
+ from math import atan2, sqrt
+ 
+-debugging = False
++debugging = True
+ 
+ pen2doom3units = 48   # inches per ascii square
+ angle_offset = 0
+@@ -146,6 +146,13 @@ class bot:
+         return self._cache.right (vel, dist)
+ 
+     #
++    #   stepup - makes the bot jump or crouch.
++    #
++
++    def stepup (self, velup, dist):
++        return self._cache.stepup (velup, dist)
++
++    #
+     #  atod3 - convert a penguin tower map angle into the doom3 angle.
+     #
+ 
+@@ -169,6 +176,18 @@ class bot:
+         return self._cache.select (l)
+ 
+     #
++    #   reload_weapon - reload the current weapon
++    #                   It returns the amount of ammo left.
++    #
++
++    def reload_weapon (self):
++        return self._cache.reload_weapon ()
++
++
++    def changeWeapon (self, n):
++        return self._cache.changeWeapon (n)
++
++    #
+     #  sync - wait for any event to occur.
+     #         The event will signify the end of
+     #         move, fire, turn, reload action.
+@@ -482,6 +501,13 @@ class bot:
+         self._cache.aim (i)
+ 
+     #
++    # start firing
++    #
++
++    def startFiring (self):
++        self._cache.startFiring ()
++
++    #
+     #  reset - reset the cache.
+     #
+ 
+diff --git a/python-bot/python_doommarine.py b/python-bot/python_doommarine.py
+index 4de6fed..b0076ca 100644
+--- a/python-bot/python_doommarine.py
++++ b/python-bot/python_doommarine.py
+@@ -36,6 +36,18 @@ def circle ():
+             print "dhewm3 returns", b.changeWeapon (w)
+             time.sleep (3)
+ 
++def change ():
++    for w in range (0, 10):
++            print "attempting to change to weapon", w,
++            print "dhewm3 returns", b.changeWeapon (w)
++            time.sleep (3)
++
++#fire function
++def fire ():
++        b.startFiring ()
++        time.sleep (3)
++        b.reload_weapon ()
++
+ def testturn (a):
+     b.turn (a, 1)
+     b.select (["turn"])
+@@ -121,6 +133,14 @@ def clock (b):
+         print "next"
+         b.reset ()
+ 
++def test_crouch_jump (b):
++    b.reset ()
++    print "trying to hop"
++    b.stepup (-2, 3*12)
++    b.select (['move'])
++    time.sleep (2)
++    b.stepup (100, 4*12)
++    b.select (['move'])
+ 
+ doommarine = -2
+ 
+@@ -146,15 +166,18 @@ def botMain (b):
+     you = findYou (b)
+ 
+     while True:
+-        moveTowards (you)
+-        b.face (you)
+-        # b.fire ()
+-        time.sleep (3)
+-
++       # moveTowards (you)
++       # b.face (you)
++    # change ()
++    # fire ()
++     test_crouch_jump (b)
++       # circle ()
++       # b.reload_weapon ()
++        #time.sleep (3)
+ 
+ 
+ if len (sys.argv) > 1:
+     doommarine = int (sys.argv[1])
+ 
+ b = botlib.bot ("localhost", "python_doommarine %d" % (doommarine))
+-execBot (b)
++execBot (b,False)

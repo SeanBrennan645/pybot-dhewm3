@@ -34,7 +34,7 @@ from botcache import cache
 from chvec import *
 from math import atan2, sqrt
 
-debugging = False
+debugging = True
 
 pen2doom3units = 48   # inches per ascii square
 angle_offset = 0
@@ -146,6 +146,13 @@ class bot:
         return self._cache.right (vel, dist)
 
     #
+    #   stepup - makes the bot jump or crouch.
+    #
+
+    def stepup (self, velup, dist):
+        return self._cache.stepup (velup, dist)
+
+    #
     #  atod3 - convert a penguin tower map angle into the doom3 angle.
     #
 
@@ -167,6 +174,18 @@ class bot:
 
     def select (self, l):
         return self._cache.select (l)
+
+    #
+    #   reload_weapon - reload the current weapon
+    #                   It returns the amount of ammo left.
+    #
+
+    def reload_weapon (self):
+        return self._cache.reload_weapon ()
+
+
+    def changeWeapon (self, n):
+        return self._cache.changeWeapon (n)
 
     #
     #  sync - wait for any event to occur.
@@ -480,6 +499,13 @@ class bot:
     def aim (self, i):
         self._cache.reset ()
         self._cache.aim (i)
+
+    #
+    # start firing
+    #
+
+    def startFiring (self):
+        self._cache.startFiring ()
 
     #
     #  reset - reset the cache.
