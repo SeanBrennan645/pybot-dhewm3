@@ -94,6 +94,42 @@ def moveTowards (i):
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
+#basic function that allows the bot the find and fire at the player
+def huntPlayer (i):
+    b.reset ()
+    print "will go and find", i
+    print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+    """
+    if not equVec (b.d2pv (b.getpos (me)), [12, 9]):
+        print "failed to find getpos at 12, 9 for python"
+    if not equVec (b.d2pv (b.getpos (i)), [40, 3]):
+        print "failed to find getpos at 40, 3 for player"
+    """
+    if debugTowards:
+        print "bot is at", b.d2pv (b.getpos (me))
+        print "you are at", b.d2pv (b.getpos (you))
+    d = b.calcnav (i)
+    if debugTowards:
+        print "object", i, "is", d, "units away"
+    if d is None:
+        if debugTowards:
+            print "cannot reach", i
+        b.turn (90, 1)
+        b.select (["turn"])
+        b.forward (100, 100)
+        b.select (["move"])
+    else:
+        if debugTowards:
+            print "distance according to dijkstra is", d
+        b.journey (100, d, i)
+        if debugTowards:
+            print "finished my journey to", i
+            print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+            print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
+    if d <= 1000:
+        fire ()
+
+
 def findAll ():
     for i in b.allobj ():
         print "the location of python bot", me, "is", b.getpos (me)
@@ -166,14 +202,15 @@ def botMain (b):
     you = findYou (b)
 
     while True:
-       # moveTowards (you)
-      b.face (you)
-    # change ()
-      fire ()
-    # test_crouch_jump (b)
+       huntPlayer (you)
+      # moveTowards (you)
+       b.face (you)
+       # change ()
+       # fire ()
+       # test_crouch_jump (b)
        # circle ()
        # b.reload_weapon ()
-        #time.sleep (3)
+       time.sleep (2)
 
 
 if len (sys.argv) > 1:
