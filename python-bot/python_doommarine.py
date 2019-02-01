@@ -45,7 +45,7 @@ def change ():
 #fire function
 def fire ():
         b.startFiring ()
-        time.sleep (3)
+        time.sleep (1)
         b.reload_weapon ()
 
 def testturn (a):
@@ -94,6 +94,7 @@ def moveTowards (i):
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
+
 #basic function that allows the bot the find and fire at the player
 def huntPlayer (i):
     b.reset ()
@@ -116,8 +117,10 @@ def huntPlayer (i):
             print "cannot reach", i
         b.turn (90, 1)
         b.select (["turn"])
-        b.forward (100, 100)
+        b.forward (50, 50)
         b.select (["move"])
+        if (abs(b.getpos (me)[0] - b.getpos (i)[0])) <= 100:
+         fire()
     else:
         if debugTowards:
             print "distance according to dijkstra is", d
@@ -126,8 +129,9 @@ def huntPlayer (i):
             print "finished my journey to", i
             print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
-    if d <= 1000:
-        fire ()
+    #if (abs(b.getpos (me)[0] - b.getpos (i)[0])) <= 100:
+     #    fire()
+
 
 
 def findAll ():
@@ -200,17 +204,24 @@ def botMain (b):
     print "yes"
     print "the python marine id is", me
     you = findYou (b)
+    playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
 
     while True:
-       huntPlayer (you)
-      # moveTowards (you)
-       b.face (you)
+
+      # huntPlayer (you)
+      #  moveTowards (you)
+        playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+        if playerDist <= 500:
+             b.face (you)
+             fire ()
+
+        b.face (you)
        # change ()
        # fire ()
        # test_crouch_jump (b)
        # circle ()
        # b.reload_weapon ()
-       time.sleep (2)
+       # time.sleep (3)
 
 
 if len (sys.argv) > 1:

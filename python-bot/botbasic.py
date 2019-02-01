@@ -35,7 +35,7 @@ debug_protocol = True
 debug_turn = False
 
 
-#
+
 #  tovecint - convert a string of numbers into a list of ints.
 #
 
