@@ -2,7 +2,7 @@
 
 # Important!!!
 This fork of the pybot is being used to assist in research of human-like AI 
-and attempt to further expand on the original pybot for a final year project.
+and attempt to further expand on the original pybot for a final year project.<br/>
 The original pybot this version is based from can be found at (https://github.com/gaiusm/pybot-dhewm3)
 
 _pybot-dhewm3_ is a fork of the dhewm3 project.  It is experimental code
