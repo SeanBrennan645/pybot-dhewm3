@@ -109,6 +109,7 @@ def huntPlayer (i):
         print "failed to find getpos at 40, 3 for player"
     """
     if playerDist <= 500:
+        #b.aim (i)
         b.face (i)
         fire ()
     if debugTowards:
