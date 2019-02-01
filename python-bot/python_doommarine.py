@@ -98,6 +98,8 @@ def moveTowards (i):
 #basic function that allows the bot the find and fire at the player
 def huntPlayer (i):
     b.reset ()
+    #getting the dist between player and bot
+    playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
     print "will go and find", i
     print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
     """
@@ -106,6 +108,9 @@ def huntPlayer (i):
     if not equVec (b.d2pv (b.getpos (i)), [40, 3]):
         print "failed to find getpos at 40, 3 for player"
     """
+    if playerDist <= 500:
+        b.face (i)
+        fire ()
     if debugTowards:
         print "bot is at", b.d2pv (b.getpos (me))
         print "you are at", b.d2pv (b.getpos (you))
@@ -119,8 +124,6 @@ def huntPlayer (i):
         b.select (["turn"])
         b.forward (50, 50)
         b.select (["move"])
-        if (abs(b.getpos (me)[0] - b.getpos (i)[0])) <= 100:
-         fire()
     else:
         if debugTowards:
             print "distance according to dijkstra is", d
@@ -129,8 +132,6 @@ def huntPlayer (i):
             print "finished my journey to", i
             print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
-    #if (abs(b.getpos (me)[0] - b.getpos (i)[0])) <= 100:
-     #    fire()
 
 
 
@@ -204,18 +205,19 @@ def botMain (b):
     print "yes"
     print "the python marine id is", me
     you = findYou (b)
-    playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+   # playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
 
     while True:
 
-      # huntPlayer (you)
+      #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+         huntPlayer (you)
       #  moveTowards (you)
-        playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
-        if playerDist <= 500:
-             b.face (you)
-             fire ()
 
-        b.face (you)
+       # if playerDist <= 500:
+        #     b.face (you)
+         #    fire ()
+
+       # b.face (you)
        # change ()
        # fire ()
        # test_crouch_jump (b)
