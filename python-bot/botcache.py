@@ -308,3 +308,12 @@ class cache:
         if not self._dict.has_key ('info_player_start'):
             self._dict['info_player_start'] = self._basic.getPlayerStart ()
         return self._dict['info_player_start']
+
+    #
+    # getLightTest - return the loctaion of the first light
+    # Sean
+
+    def getLightTest (self):
+        if not self._dict.has_key ('light'):
+            self._dict['light'] = self._basic.getLightTest ()
+        return self._dict['light']

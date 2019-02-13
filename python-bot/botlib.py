@@ -70,10 +70,11 @@ class bot:
         self._aas = aas (self.getPenMapName ())
         initPosPen = self._aas.getPlayerStart ()
         initPosD3 = self._cache.getPlayerStart ()
+        lightLoc = self._cache.getLightTest ()
         self._scaleX = float (pen2doom3units)
         self._scaleY = float (pen2doom3units)
         if debugging:
-            print "initPosPen =", initPosPen, "initPosD3 =", initPosD3
+            print "initPosPen =", initPosPen, "initPosD3 =", initPosD3, "lightLoc =", lightLoc
 
 
     #

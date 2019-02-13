@@ -211,7 +211,7 @@ def botMain (b):
     while True:
 
       #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
-         huntPlayer (you)
+      #   huntPlayer (you)
       #  moveTowards (you)
 
        # if playerDist <= 500:
@@ -224,7 +224,8 @@ def botMain (b):
        # test_crouch_jump (b)
        # circle ()
        # b.reload_weapon ()
-       # time.sleep (3)
+       print b.allobj()
+       time.sleep (3)
 
 
 if len (sys.argv) > 1:

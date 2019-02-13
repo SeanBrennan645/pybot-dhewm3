@@ -546,6 +546,14 @@ class basic:
         return self.getEntityPos (self.getPairEntity ("classname", "info_player_start"))
 
     #
+    # getLightTest - returns the location of the first light
+    # Sean
+
+    def getLightTest (self):
+        return self.getEntityPos (self.getPairEntity ("name","light_2"))
+
+
+    #
     #  getEntityPos - returns coordinate representating the origin position of entity, i.
     #
 
