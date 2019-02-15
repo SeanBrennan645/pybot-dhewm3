@@ -60,6 +60,7 @@ def incAngle (angle, inc):
 
 
 class bot:
+
     #
     #  __init__ the constructor for bot class which
     #           joins together all the lower layers in the AI
@@ -71,11 +72,23 @@ class bot:
         initPosPen = self._aas.getPlayerStart ()
         initPosD3 = self._cache.getPlayerStart ()
         lightLoc = self._cache.getLightTest ()
+        lightPos = lightLoc
         self._scaleX = float (pen2doom3units)
         self._scaleY = float (pen2doom3units)
         if debugging:
             print "initPosPen =", initPosPen, "initPosD3 =", initPosD3, "lightLoc =", lightLoc
 
+    #
+    # getLightPos - reuturns the D3 pos of light
+    #
+    def getLightPos (self):
+        return lightPos
+
+    #
+    # getLight - returns light pos from botaa
+    #
+    def getLight (self):
+        return self._aas.getLight()
 
     #
     #  getPenMapName - return the name of the pen map.

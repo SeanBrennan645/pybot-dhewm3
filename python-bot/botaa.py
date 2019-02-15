@@ -33,7 +33,7 @@ initMapSize = 1
 
 mapdir = os.path.join (os.environ['HOME'], ".local/share/dhewm3/base/maps")
 debugging = False
-debugroute = False
+debugroute = True
 debugmap = False
 
 status_open, status_closed, status_secret = range (3)
@@ -978,6 +978,15 @@ class aas:
         print "the pen map should contain one worldspawn location"
         print "this needs to be fixed before area awareness makes any sence to the bot"
         return [1, 1]
+
+    #
+    # getLight - return the first light obj in the map
+    #
+
+    def getLight (self):
+        for r in rooms.keys ():
+            print "lights[0] details:", rooms[r].lights[0]
+            return rooms[r].lights[0]
 
 
 #

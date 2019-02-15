@@ -63,7 +63,7 @@ def calcDist (d0, d1):
 
 def moveTowards (i):
     b.reset ()
-    print "will go and find", i
+    print "will go and find light"
     print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
     """
     if not equVec (b.d2pv (b.getpos (me)), [12, 9]):
@@ -74,7 +74,7 @@ def moveTowards (i):
     if debugTowards:
         print "bot is at", b.d2pv (b.getpos (me))
         print "you are at", b.d2pv (b.getpos (you))
-    d = b.calcnav (i)
+    d = b.lightTravel()
     if debugTowards:
         print "object", i, "is", d, "units away"
     if d is None:
@@ -206,13 +206,14 @@ def botMain (b):
     print "yes"
     print "the python marine id is", me
     you = findYou (b)
+    print "you info is this", you
    # playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
 
     while True:
 
       #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
       #   huntPlayer (you)
-      #  moveTowards (you)
+       moveTowards(b.getLight())
 
        # if playerDist <= 500:
         #     b.face (you)
@@ -224,7 +225,8 @@ def botMain (b):
        # test_crouch_jump (b)
        # circle ()
        # b.reload_weapon ()
-       print b.allobj()
+       # print b.allobj()
+       # print b.getLightPos()
        time.sleep (3)
 
 
