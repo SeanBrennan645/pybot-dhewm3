@@ -74,7 +74,7 @@ def moveTowards (i):
     if debugTowards:
         print "bot is at", b.d2pv (b.getpos (me))
         print "you are at", b.d2pv (b.getpos (you))
-    d = b.lightTravel()
+    d = b.calcnav(i)
     if debugTowards:
         print "object", i, "is", d, "units away"
     if d is None:
@@ -133,6 +133,39 @@ def huntPlayer (i):
             print "finished my journey to", i
             print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
+
+#function to find and travel to a certain light postition
+def lightTravel ():
+    b.reset ()
+    print "will go and find light"
+   # print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+    """
+    if not equVec (b.d2pv (b.getpos (me)), [12, 9]):
+        print "failed to find getpos at 12, 9 for python"
+    if not equVec (b.d2pv (b.getpos (i)), [40, 3]):
+        print "failed to find getpos at 40, 3 for player"
+    """
+    if debugTowards:
+        print "bot is at", b.d2pv (b.getpos (me))
+       # print "you are at", b.d2pv (b.getpos (you))
+    d = b.lightNav(4)
+   # if debugTowards:
+       # print "object", i, "is", d, "units away"
+    if d is None:
+       # if debugTowards:
+           # print "cannot reach", i
+        b.turn (90, 1)
+        b.select (["turn"])
+        b.forward (100, 100)
+        b.select (["move"])
+    else:
+        if debugTowards:
+            print "distance according to dijkstra is", d
+        b.lightJourney (100, d, 10)
+       # if debugTowards:
+           # print "finished my journey to", i
+           # print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+           # print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
 
@@ -213,7 +246,9 @@ def botMain (b):
 
       #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
       #   huntPlayer (you)
-       moveTowards(b.getLight())
+       time.sleep (10)
+       lightTravel ()
+       #b.listLights ()
 
        # if playerDist <= 500:
         #     b.face (you)

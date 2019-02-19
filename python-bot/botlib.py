@@ -78,6 +78,9 @@ class bot:
         if debugging:
             print "initPosPen =", initPosPen, "initPosD3 =", initPosD3, "lightLoc =", lightLoc
 
+    def listLights (self):
+        return self._aas.printLights()
+
     #
     # getLightPos - reuturns the D3 pos of light
     #
@@ -236,6 +239,16 @@ class bot:
         dest = self.d2pv (self.getpos (d))
         return self.p2d (self._aas.calcnav (src, dest))
 
+    #
+    # lightNav - calls modified version of calcnav for light travel
+    #
+
+    def lightNav (self, l):
+        self.reset ()
+        src = self.d2pv (self.getpos (self.me ()))
+        lightNo = l
+        return self.p2d (self._aas.lightNav (src, lightNo))
+
 
     #
     #  calcAngle - calculate the angle to face vector, v.
@@ -315,6 +328,13 @@ class bot:
         return pen2doom3units * u
 
     #
+    # getLightPen - get light pen co-ordinates from botaa.py
+    #
+
+    def getLightPen (self, lightNo):
+        return self._aas.getLight(lightNo)
+
+    #
     #  journey - move at velocity, vel, for a distance, dist
     #            along the navigation route calculated in calcnav.
     #
@@ -369,6 +389,67 @@ class bot:
             if dist == 0:
                 print "journey algorithm ran out of distance"
             elif equVec (dest, self.d2pv (self.getpos (obj))):
+                print "journey algorithm reached the goal object"
+            elif equVec (self._aas.getHop (0), dest):
+                print "journey algorithm reached intemediate hop"
+            else:
+                print "journey algorithm failed"
+        self.reset ()
+
+    #
+    # lightJourney - modified version of journey to allow work with light entities
+    #
+
+    def lightJourney (self, vel, dist, lightNo):
+        self.reset ()
+        if debugging:
+            print "journey along route", self._aas._route
+        dest = self.getLightPen (lightNo)
+        if debugging:
+            print "aas.getHop (0) =", self._aas.getHop (0), "my pos =", self.d2pv (self.getpos (self.me ())), "dest =", dest
+        #
+        #  keep stepping along route as long as the object does not move and we have dist units to move along
+        #
+        while (dist > 0) and (vel != 0) and equVec (dest, self.getLightPen (lightNo)) and (not equVec (self._aas.getHop (0), dest)):
+            v = subVec (self.d2pv (self.getpos (self.me ())), self._aas.getHop (0))
+            hopPos = self._aas.getHop (0)
+            hops = 1
+            while (hops < self._aas.noOfHops ()) and equVec (subVec (hopPos, self._aas.getHop (hops)), v):
+                hopPos = self._aas.getHop (hops)
+                hops += 1
+            if hops == 1:
+                if debugging:
+                    print "single hop nav"
+                dist = self.ssNav (vel, dist, self._aas.getHop (0))
+                if debugging:
+                    print "old journey route", self._aas._route
+                    print "journey: reached coord", self._aas.getHop (0)
+                self._aas.removeHop (0, self.d2pv (self.getpos (self.me ())))
+                if debugging:
+                    print "new journey route", self._aas._route
+            else:
+                if debugging:
+                    print "bulk hop nav", hops
+                dist = self.ssBulkNav (vel, self._aas.getHop (hops-1), hops)
+                if dist > 0:
+                    self.reset ()
+                    mypos = self.d2pv (self.getpos (self.me ()))
+                    for h in range (hops):
+                        if equVec (mypos, self._aas.getHop (h)):
+                            for i in range (h):
+                                self._aas.removeHop (0, self._aas.getHop (0))
+                            break
+                    else:
+                        if debugging:
+                            print "oops fallen off the route, aborting and will try again"
+                        return
+                    hops = 0
+                    if debugging:
+                        print "new journey route", self._aas._route
+        if debugging:
+            if dist == 0:
+                print "journey algorithm ran out of distance"
+            elif equVec (dest, self.getLightPen (lightNo)):
                 print "journey algorithm reached the goal object"
             elif equVec (self._aas.getHop (0), dest):
                 print "journey algorithm reached intemediate hop"

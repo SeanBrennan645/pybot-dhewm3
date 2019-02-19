@@ -812,6 +812,56 @@ class aas:
             print "unable to find a route from", src, "to", dest
         return None
 
+    #
+    # lightNav - simple modification of calcnav to travel to a light entity
+    #
+    def lightNav (self, src, lightNo):
+        print "Light Num is ", lightNo
+        dest = self.getLight (lightNo)
+        self._neighbours = {}
+        self._cost = {}
+        self._prev = {}
+        self._route = []
+        self._choices = [src]
+        self._setCostRoute (src, 1, src)
+        self._visited = []
+        if debugroute:
+            print "src =", src, "dest =", dest
+        self.checkLegal (src, "source")
+        self.checkLegal (dest, "destination")
+        if equVec (src, dest):
+            self._route = [dest]
+            return 0
+        while self._choices != []:
+            if debugroute:
+                print "we have the following nodes to explore:", self._choices
+            u = self._getBestChoice ()
+            self._visited += [u]
+            if debugroute:
+                print "have chosen", u, "cost from src is", self._getCost (u)
+            if equVec (u, dest):
+                if debugroute:
+                    print "found end of route"
+                self._route = self._defineRoute (src, dest)
+                if debugroute:
+                    self.printFloor (src, dest)
+                return self._getCost (dest)
+            for v in self._getNeighbours (u):
+                self._addChoice (v)
+                if debugroute:
+                    print "at", u, "checking step", v,
+                alternative = self._getCost (u) + self._getLength (v)
+                if debugroute:
+                    print "cost", alternative, "was", self._getCost (v)
+                if alternative >= INFINITY:
+                    print "bug in dijkstra", alternative, "should not exceed infinity"
+                if alternative < self._getCost (v):
+                    if debugroute:
+                        print "found a better route to '", v, "' value", alternative, "from '", src, "'"
+                    self._setCostRoute (v, alternative, u)
+        if debugroute:
+            print "unable to find a route from", src, "to", dest
+        return None
 
     def _setCostRoute (self, n, cost, prev):
         k = '%d_%d' % (n[0], n[1])
@@ -980,12 +1030,17 @@ class aas:
         return [1, 1]
 
     #
-    # getLight - return the first light obj in the map
+    # getLight - return the a selected light entity in the map
     #
 
-    def getLight (self):
+    def getLight (self, l):
         for r in rooms.keys ():
-            print "lights[0] details:", rooms[r].lights[0]
+            print "lights[", l, "] details:", rooms[r].lights[l]
+            return rooms[r].lights[l]
+
+    def printLights (self):
+        for r in rooms.keys ():
+            print "all lights ", rooms[r].lights[:]
             return rooms[r].lights[0]
 
 
