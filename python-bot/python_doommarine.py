@@ -246,8 +246,9 @@ def botMain (b):
 
       #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
       #   huntPlayer (you)
-       time.sleep (10)
-       lightTravel ()
+       #time.sleep (10)
+       #lightTravel ()
+       print b.getRooms()
        #b.listLights ()
 
        # if playerDist <= 500:

@@ -815,9 +815,9 @@ class aas:
     #
     # lightNav - simple modification of calcnav to travel to a light entity
     #
-    def lightNav (self, src, lightNo):
+    def lightNav (self, src, roomNo, lightNo):
         print "Light Num is ", lightNo
-        dest = self.getLight (lightNo)
+        dest = self.getLight (roomNo, lightNo)
         self._neighbours = {}
         self._cost = {}
         self._prev = {}
@@ -1033,15 +1033,32 @@ class aas:
     # getLight - return the a selected light entity in the map
     #
 
-    def getLight (self, l):
-        for r in rooms.keys ():
-            print "lights[", l, "] details:", rooms[r].lights[l]
-            return rooms[r].lights[l]
+    def getLight (self, r, l):
+        return rooms[r].lights[l]
 
+    #
+    # printLights - was used to find all the info on lights within a room
+    #               not overly useful to use anymore unless modified (Kept for use in project)
+    #
     def printLights (self):
         for r in rooms.keys ():
             print "all lights ", rooms[r].lights[:]
             return rooms[r].lights[0]
+
+    #
+    # getRooms - used to find the total value of all rooms
+    #
+
+    def getRooms (self):
+        totalrooms = len(rooms)
+        return totalrooms
+
+    #
+    # getRoomLights - used to find the total value of lights in a room
+    #
+    def getRoomLights (self, roomNo):
+        totalLights = len(rooms[roomNo].lights)
+        return totalLights
 
 
 #

@@ -78,8 +78,24 @@ class bot:
         if debugging:
             print "initPosPen =", initPosPen, "initPosD3 =", initPosD3, "lightLoc =", lightLoc
 
+    #
+    # listLights- was used to get all locs of lights in a room
+    #             not overly useful to use anymore (kept for use in project)
+    #
     def listLights (self):
         return self._aas.printLights()
+
+    #
+    # getRooms - used to get total number of rooms in a map
+    #
+    def getRooms (self):
+        return self._aas.getRooms()
+
+    #
+    # getRoomLights - used to get the total number of lights in a room
+    #
+    def getRoomLights (self, roomNo):
+        return self._aas.getRoomLights(roomNo)
 
     #
     # getLightPos - reuturns the D3 pos of light
@@ -331,8 +347,8 @@ class bot:
     # getLightPen - get light pen co-ordinates from botaa.py
     #
 
-    def getLightPen (self, lightNo):
-        return self._aas.getLight(lightNo)
+    def getLightPen (self, roomNo, lightNo):
+        return self._aas.getLight(roomNo, lightNo)
 
     #
     #  journey - move at velocity, vel, for a distance, dist
@@ -400,17 +416,17 @@ class bot:
     # lightJourney - modified version of journey to allow work with light entities
     #
 
-    def lightJourney (self, vel, dist, lightNo):
+    def lightJourney (self, vel, dist, roomNo, lightNo):
         self.reset ()
         if debugging:
             print "journey along route", self._aas._route
-        dest = self.getLightPen (lightNo)
+        dest = self.getLightPen (roomNo, lightNo)
         if debugging:
             print "aas.getHop (0) =", self._aas.getHop (0), "my pos =", self.d2pv (self.getpos (self.me ())), "dest =", dest
         #
         #  keep stepping along route as long as the object does not move and we have dist units to move along
         #
-        while (dist > 0) and (vel != 0) and equVec (dest, self.getLightPen (lightNo)) and (not equVec (self._aas.getHop (0), dest)):
+        while (dist > 0) and (vel != 0) and equVec (dest, self.getLightPen (roomNo, lightNo)) and (not equVec (self._aas.getHop (0), dest)):
             v = subVec (self.d2pv (self.getpos (self.me ())), self._aas.getHop (0))
             hopPos = self._aas.getHop (0)
             hops = 1
@@ -449,7 +465,7 @@ class bot:
         if debugging:
             if dist == 0:
                 print "journey algorithm ran out of distance"
-            elif equVec (dest, self.getLightPen (lightNo)):
+            elif equVec (dest, self.getLightPen (roomNo, lightNo)):
                 print "journey algorithm reached the goal object"
             elif equVec (self._aas.getHop (0), dest):
                 print "journey algorithm reached intemediate hop"
