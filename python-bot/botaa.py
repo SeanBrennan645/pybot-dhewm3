@@ -1034,15 +1034,36 @@ class aas:
     #
 
     def getLight (self, r, l):
-        return rooms[r].lights[l]
+        if r == 1:
+           return rooms['1'].lights[l]
+        elif r == 2:
+           return rooms['2'].lights[l]
+        elif r == 3:
+           return rooms['3'].lights[l]
+        elif r == 4:
+           return rooms['4'].lights[l]
+        elif r == 5:
+           return rooms['5'].lights[l]
+        elif r == 6:
+           return rooms['6'].lights[l]
+        elif r == 7:
+           return rooms['7'].lights[l]
+        elif r == 8:
+           return rooms['8'].lights[l]
+        elif r == 9:
+           return rooms['9'].lights[l]
+        elif r == 10:
+           return rooms['10'].lights[l]
+
 
     #
     # printLights - was used to find all the info on lights within a room
     #               not overly useful to use anymore unless modified (Kept for use in project)
     #
     def printLights (self):
+        print "testing rooms print",  rooms['1']
         for r in rooms.keys ():
-            print "all lights ", rooms[r].lights[:]
+            print "all lights ", rooms['2'].lights[:]
             return rooms[r].lights[0]
 
     #
@@ -1055,9 +1076,35 @@ class aas:
 
     #
     # getRoomLights - used to find the total value of lights in a room
+    #                 CAN ONLY BE USED WITH MAPS WITH MAX OF 10 ROOMS
+    #                 this is due to how dict objects are referenced
     #
     def getRoomLights (self, roomNo):
-        totalLights = len(rooms[roomNo].lights)
+        print "RoomNo is ", roomNo
+        totalLights = 0
+        #print "Light No 2 is ", rooms['roomNo'].lights[2]
+        #need to use if statements as dict cannot be referenced using a passed in value
+        if roomNo == 1:
+            totalLights = len(rooms['1'].lights)
+        elif roomNo == 2:
+            totalLights = len(rooms['2'].lights)
+        elif roomNo == 3:
+            totalLights = len(rooms['3'].lights)
+        elif roomNo == 4:
+            totalLights = len(rooms['4'].lights)
+        elif roomNo == 5:
+            totalLights = len(rooms['5'].lights)
+        elif roomNo == 6:
+            totalLights = len(rooms['6'].lights)
+        elif roomNo == 7:
+            totalLights = len(rooms['7'].lights)
+        elif roomNo == 8:
+            totalLights = len(rooms['8'].lights)
+        elif roomNo == 9:
+            totalLights = len(rooms['9'].lights)
+        elif roomNo == 10:
+            totalLights = len(rooms['10'].lights)
+        #roomNo += 1
         return totalLights
 
 

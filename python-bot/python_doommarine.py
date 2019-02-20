@@ -135,7 +135,7 @@ def huntPlayer (i):
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 #function to find and travel to a certain light postition
-def lightTravel ():
+def lightTravel (room, light):
     b.reset ()
     print "will go and find light"
    # print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
@@ -148,7 +148,7 @@ def lightTravel ():
     if debugTowards:
         print "bot is at", b.d2pv (b.getpos (me))
        # print "you are at", b.d2pv (b.getpos (you))
-    d = b.lightNav(4)
+    d = b.lightNav(room, light)
    # if debugTowards:
        # print "object", i, "is", d, "units away"
     if d is None:
@@ -161,7 +161,8 @@ def lightTravel ():
     else:
         if debugTowards:
             print "distance according to dijkstra is", d
-        b.lightJourney (100, d, 10)
+        time.sleep(5)
+        b.lightJourney (100, -d, room, light)
        # if debugTowards:
            # print "finished my journey to", i
            # print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
@@ -239,17 +240,25 @@ def botMain (b):
     print "yes"
     print "the python marine id is", me
     you = findYou (b)
-    print "you info is this", you
+    #print "you info is this", you
    # playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
-
+    rooms = b.getRooms()
     while True:
 
       #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
       #   huntPlayer (you)
        #time.sleep (10)
        #lightTravel ()
-       print b.getRooms()
-       #b.listLights ()
+       #print b.getRooms()
+      # b.listLights ()
+      # print "light details" , b.getLight(2, 2)
+       print "rooms = ", rooms
+       for r in range(1, rooms+1):
+           light = b.getRoomLights (r)
+           print "lights = ", light
+           for l in range(light):
+               lightTravel(r, l)
+
 
        # if playerDist <= 500:
         #     b.face (you)

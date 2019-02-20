@@ -106,8 +106,8 @@ class bot:
     #
     # getLight - returns light pos from botaa
     #
-    def getLight (self):
-        return self._aas.getLight()
+    def getLight (self, room, light):
+        return self._aas.getLight(room, light)
 
     #
     #  getPenMapName - return the name of the pen map.
@@ -259,11 +259,12 @@ class bot:
     # lightNav - calls modified version of calcnav for light travel
     #
 
-    def lightNav (self, l):
+    def lightNav (self, r, l):
         self.reset ()
         src = self.d2pv (self.getpos (self.me ()))
+        roomNo = r
         lightNo = l
-        return self.p2d (self._aas.lightNav (src, lightNo))
+        return self.p2d (self._aas.lightNav (src, roomNo, lightNo))
 
 
     #
@@ -420,13 +421,13 @@ class bot:
         self.reset ()
         if debugging:
             print "journey along route", self._aas._route
-        dest = self.getLightPen (roomNo, lightNo)
+        dest =self.d2pv(self.p2d( self.getLightPen (roomNo, lightNo)))
         if debugging:
             print "aas.getHop (0) =", self._aas.getHop (0), "my pos =", self.d2pv (self.getpos (self.me ())), "dest =", dest
         #
         #  keep stepping along route as long as the object does not move and we have dist units to move along
         #
-        while (dist > 0) and (vel != 0) and equVec (dest, self.getLightPen (roomNo, lightNo)) and (not equVec (self._aas.getHop (0), dest)):
+        while (dist > 500) and (vel != 0) and equVec (dest, self.getLightPen (roomNo, lightNo)) and (not equVec (self._aas.getHop (0), dest)):
             v = subVec (self.d2pv (self.getpos (self.me ())), self._aas.getHop (0))
             hopPos = self._aas.getHop (0)
             hops = 1
