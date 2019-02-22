@@ -253,18 +253,19 @@ class bot:
         self.reset ()
         src = self.d2pv (self.getpos (self.me ()))
         dest = self.d2pv (self.getpos (d))
+        #print "dest in dhewm is ", dest
+        time.sleep (5)
         return self.p2d (self._aas.calcnav (src, dest))
 
     #
     # lightNav - calls modified version of calcnav for light travel
     #
 
-    def lightNav (self, r, l):
+    def lightNav (self, d):
         self.reset ()
         src = self.d2pv (self.getpos (self.me ()))
-        roomNo = r
-        lightNo = l
-        return self.p2d (self._aas.lightNav (src, roomNo, lightNo))
+        #dest = self.d2pv (d)
+        return self.p2d (self._aas.calcnav (src, d))
 
 
     #
@@ -421,13 +422,14 @@ class bot:
         self.reset ()
         if debugging:
             print "journey along route", self._aas._route
-        dest =self.d2pv(self.p2d( self.getLightPen (roomNo, lightNo)))
+        dest =  self.getLightPen (roomNo, lightNo)
+        dest = map(int, dest)
         if debugging:
             print "aas.getHop (0) =", self._aas.getHop (0), "my pos =", self.d2pv (self.getpos (self.me ())), "dest =", dest
         #
         #  keep stepping along route as long as the object does not move and we have dist units to move along
         #
-        while (dist > 500) and (vel != 0) and equVec (dest, self.getLightPen (roomNo, lightNo)) and (not equVec (self._aas.getHop (0), dest)):
+        while (dist > 0) and (vel != 0) and equVec (dest, map(int, self.getLightPen (roomNo, lightNo))) and (not equVec (self._aas.getHop (0), dest)):
             v = subVec (self.d2pv (self.getpos (self.me ())), self._aas.getHop (0))
             hopPos = self._aas.getHop (0)
             hops = 1
@@ -466,7 +468,7 @@ class bot:
         if debugging:
             if dist == 0:
                 print "journey algorithm ran out of distance"
-            elif equVec (dest, self.getLightPen (roomNo, lightNo)):
+            elif equVec (dest, map (int, self.getLightPen (roomNo, lightNo))):
                 print "journey algorithm reached the goal object"
             elif equVec (self._aas.getHop (0), dest):
                 print "journey algorithm reached intemediate hop"

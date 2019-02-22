@@ -815,9 +815,7 @@ class aas:
     #
     # lightNav - simple modification of calcnav to travel to a light entity
     #
-    def lightNav (self, src, roomNo, lightNo):
-        print "Light Num is ", lightNo
-        dest = self.getLight (roomNo, lightNo)
+    def lightNav (self, src, dest):
         self._neighbours = {}
         self._cost = {}
         self._prev = {}
@@ -828,7 +826,7 @@ class aas:
         if debugroute:
             print "src =", src, "dest =", dest
         self.checkLegal (src, "source")
-        self.checkLegal (dest, "destination")
+       # self.checkLegal (dest, "destination")
         if equVec (src, dest):
             self._route = [dest]
             return 0
@@ -987,7 +985,7 @@ class aas:
     #
 
     def clearOfObstacle (self, v):
-        return (self._floor.get (v[0], v[1]) != '#') and (self._floor.get (v[0], v[1]) != 'l')
+        return (self._floor.get (v[0], v[1]) != '#')# and (self._floor.get (v[0], v[1]) != 'l')
 
     #
     #  _getNeighbours - returns the neighbours of, p.
@@ -1035,25 +1033,25 @@ class aas:
 
     def getLight (self, r, l):
         if r == 1:
-           return rooms['1'].lights[l]
+           return rooms['1'].ammo[l][2]
         elif r == 2:
-           return rooms['2'].lights[l]
+           return rooms['2'].ammo[l][2]
         elif r == 3:
-           return rooms['3'].lights[l]
+           return rooms['3'].ammo[l][2]
         elif r == 4:
-           return rooms['4'].lights[l]
+           return rooms['4'].ammo[l][2]
         elif r == 5:
-           return rooms['5'].lights[l]
+           return rooms['5'].ammo[l][2]
         elif r == 6:
-           return rooms['6'].lights[l]
+           return rooms['6'].ammo[l][2]
         elif r == 7:
-           return rooms['7'].lights[l]
+           return rooms['7'].ammo[l][2]
         elif r == 8:
-           return rooms['8'].lights[l]
+           return rooms['8'].ammo[l][2]
         elif r == 9:
-           return rooms['9'].lights[l]
+           return rooms['9'].ammo[l][2]
         elif r == 10:
-           return rooms['10'].lights[l]
+           return rooms['10'].ammo[l][2]
 
 
     #
@@ -1063,7 +1061,7 @@ class aas:
     def printLights (self):
         print "testing rooms print",  rooms['1']
         for r in rooms.keys ():
-            print "all lights ", rooms['2'].lights[:]
+            print "all lights ", rooms['2'].ammo[:]
             return rooms[r].lights[0]
 
     #
@@ -1085,25 +1083,25 @@ class aas:
         #print "Light No 2 is ", rooms['roomNo'].lights[2]
         #need to use if statements as dict cannot be referenced using a passed in value
         if roomNo == 1:
-            totalLights = len(rooms['1'].lights)
+            totalLights = len(rooms['1'].ammo)
         elif roomNo == 2:
-            totalLights = len(rooms['2'].lights)
+            totalLights = len(rooms['2'].ammo)
         elif roomNo == 3:
-            totalLights = len(rooms['3'].lights)
+            totalLights = len(rooms['3'].ammo)
         elif roomNo == 4:
-            totalLights = len(rooms['4'].lights)
+            totalLights = len(rooms['4'].ammo)
         elif roomNo == 5:
-            totalLights = len(rooms['5'].lights)
+            totalLights = len(rooms['5'].ammo)
         elif roomNo == 6:
-            totalLights = len(rooms['6'].lights)
+            totalLights = len(rooms['6'].ammo)
         elif roomNo == 7:
-            totalLights = len(rooms['7'].lights)
+            totalLights = len(rooms['7'].ammo)
         elif roomNo == 8:
-            totalLights = len(rooms['8'].lights)
+            totalLights = len(rooms['8'].ammo)
         elif roomNo == 9:
-            totalLights = len(rooms['9'].lights)
+            totalLights = len(rooms['9'].ammo)
         elif roomNo == 10:
-            totalLights = len(rooms['10'].lights)
+            totalLights = len(rooms['10'].ammo)
         #roomNo += 1
         return totalLights
 
