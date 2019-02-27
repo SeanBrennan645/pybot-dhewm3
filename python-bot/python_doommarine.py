@@ -134,15 +134,13 @@ def huntPlayer (i):
             print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
-#function to find and travel to a certain light postition
-def lightTravel (e, r, l):
+#function to find and travel to a certain ammo postition
+def ammoTravel (e, r, l):
     b.reset ()
-    print "will go and find light"
-   # print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+    print "will go and find ammo node"
     if debugTowards:
         print "bot is at", b.d2pv (b.getpos (me))
-       # print "you are at", b.d2pv (b.getpos (you))
-    d = b.lightNav(e)
+    d = b.ammoNav(e)
     if debugTowards:
         print "object", e, "is", d, "units away"
     if d is None:
@@ -155,12 +153,7 @@ def lightTravel (e, r, l):
     else:
         if debugTowards:
             print "distance according to dijkstra is", d
-        time.sleep(5)
-        b.lightJourney (100, d, r, l)
-       # if debugTowards:
-           # print "finished my journey to", i
-           # print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
-           # print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
+        b.ammoJourney (100, d, r, l)
 
 
 
@@ -235,25 +228,26 @@ def botMain (b):
     print "the python marine id is", me
     you = findYou (b)
     #print "you info is this", you
-   # playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+    #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+    #getting the total number of rooms within the map
     rooms = b.getRooms()
     while True:
 
-      #   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
-      #   huntPlayer (you)
-      #moveTowards(you)
+       #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+       #huntPlayer (you)
+       #moveTowards(you)
        print "rooms = ", rooms
        for r in range(1, rooms+1):
-           light = b.getRoomLights (r)
-           print "lights = ", light
-           for l in range(light):
-               dest = b.getLight(r, l)
+           ammo = b.getRoomAmmo (r)
+           print "number of ammo in room = ", ammo
+           for l in range(ammo):
+               dest = b.getAmmo(r, l)
                dest = map (int, dest)
-               lightTravel(dest, r, l)
+               ammoTravel(dest, r, l)
        # if playerDist <= 500:
         #     b.face (you)
          #    fire ()
-       time.sleep (3)
+       time.sleep (0.3)
 
 
 if len (sys.argv) > 1:

@@ -33,7 +33,7 @@ initMapSize = 1
 
 mapdir = os.path.join (os.environ['HOME'], ".local/share/dhewm3/base/maps")
 debugging = False
-debugroute = True
+debugroute = False
 debugmap = False
 
 status_open, status_closed, status_secret = range (3)
@@ -815,7 +815,7 @@ class aas:
     #
     # lightNav - simple modification of calcnav to travel to a light entity
     #
-    def lightNav (self, src, dest):
+    def ammoNav (self, src, dest):
         self._neighbours = {}
         self._cost = {}
         self._prev = {}
@@ -826,7 +826,7 @@ class aas:
         if debugroute:
             print "src =", src, "dest =", dest
         self.checkLegal (src, "source")
-       # self.checkLegal (dest, "destination")
+        self.checkLegal (dest, "destination")
         if equVec (src, dest):
             self._route = [dest]
             return 0
@@ -1028,10 +1028,10 @@ class aas:
         return [1, 1]
 
     #
-    # getLight - return the a selected light entity in the map
+    # getAmmo - return the a selected ammo entity in the map
     #
 
-    def getLight (self, r, l):
+    def getAmmo (self, r, l):
         if r == 1:
            return rooms['1'].ammo[l][2]
         elif r == 2:
@@ -1073,37 +1073,36 @@ class aas:
         return totalrooms
 
     #
-    # getRoomLights - used to find the total value of lights in a room
+    # getRoomAmmo - used to find the total value of ammo locations in a room
     #                 CAN ONLY BE USED WITH MAPS WITH MAX OF 10 ROOMS
     #                 this is due to how dict objects are referenced
     #
-    def getRoomLights (self, roomNo):
+    def getRoomAmmo (self, roomNo):
         print "RoomNo is ", roomNo
-        totalLights = 0
+        totalAmmo = 0
         #print "Light No 2 is ", rooms['roomNo'].lights[2]
         #need to use if statements as dict cannot be referenced using a passed in value
         if roomNo == 1:
-            totalLights = len(rooms['1'].ammo)
+            totalAmmo = len(rooms['1'].ammo)
         elif roomNo == 2:
-            totalLights = len(rooms['2'].ammo)
+            totalAmmo = len(rooms['2'].ammo)
         elif roomNo == 3:
-            totalLights = len(rooms['3'].ammo)
+            totalAmmo = len(rooms['3'].ammo)
         elif roomNo == 4:
-            totalLights = len(rooms['4'].ammo)
+            totalAmmo = len(rooms['4'].ammo)
         elif roomNo == 5:
-            totalLights = len(rooms['5'].ammo)
+            totalAmmo = len(rooms['5'].ammo)
         elif roomNo == 6:
-            totalLights = len(rooms['6'].ammo)
+            totalAmmo = len(rooms['6'].ammo)
         elif roomNo == 7:
-            totalLights = len(rooms['7'].ammo)
+            totalAmmo = len(rooms['7'].ammo)
         elif roomNo == 8:
-            totalLights = len(rooms['8'].ammo)
+            totalAmmo = len(rooms['8'].ammo)
         elif roomNo == 9:
-            totalLights = len(rooms['9'].ammo)
+            totalAmmo = len(rooms['9'].ammo)
         elif roomNo == 10:
-            totalLights = len(rooms['10'].ammo)
-        #roomNo += 1
-        return totalLights
+            totalAmmo = len(rooms['10'].ammo)
+        return totalAmmo
 
 
 #

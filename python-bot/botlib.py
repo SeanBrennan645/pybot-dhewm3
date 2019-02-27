@@ -34,7 +34,7 @@ from botcache import cache
 from chvec import *
 from math import atan2, sqrt
 
-debugging = True
+debugging = False
 
 pen2doom3units = 48   # inches per ascii square
 angle_offset = 0
@@ -71,12 +71,14 @@ class bot:
         self._aas = aas (self.getPenMapName ())
         initPosPen = self._aas.getPlayerStart ()
         initPosD3 = self._cache.getPlayerStart ()
-        lightLoc = self._cache.getLightTest ()
-        lightPos = lightLoc
+        #commented out code about lights was used for testing
+        #not nessecary for code to run
+        #lightLoc = self._cache.getLightTest ()
+        #lightPos = lightLoc
         self._scaleX = float (pen2doom3units)
         self._scaleY = float (pen2doom3units)
         if debugging:
-            print "initPosPen =", initPosPen, "initPosD3 =", initPosD3, "lightLoc =", lightLoc
+            print "initPosPen =", initPosPen, "initPosD3 =", initPosD3#, "lightLoc =", lightLoc
 
     #
     # listLights- was used to get all locs of lights in a room
@@ -92,10 +94,10 @@ class bot:
         return self._aas.getRooms()
 
     #
-    # getRoomLights - used to get the total number of lights in a room
+    # getRoomAmmo - used to get the total number of lights in a room
     #
-    def getRoomLights (self, roomNo):
-        return self._aas.getRoomLights(roomNo)
+    def getRoomAmmo (self, roomNo):
+        return self._aas.getRoomAmmo(roomNo)
 
     #
     # getLightPos - reuturns the D3 pos of light
@@ -104,10 +106,10 @@ class bot:
         return lightPos
 
     #
-    # getLight - returns light pos from botaa
+    # getAmmo - returns light pos from botaa
     #
-    def getLight (self, room, light):
-        return self._aas.getLight(room, light)
+    def getAmmo (self, room, ammo):
+        return self._aas.getAmmo(room, ammo)
 
     #
     #  getPenMapName - return the name of the pen map.
@@ -258,13 +260,12 @@ class bot:
         return self.p2d (self._aas.calcnav (src, dest))
 
     #
-    # lightNav - calls modified version of calcnav for light travel
+    # ammoNav - calls calcnav for ammo travel takes in a direct
     #
 
-    def lightNav (self, d):
+    def ammoNav (self, d):
         self.reset ()
         src = self.d2pv (self.getpos (self.me ()))
-        #dest = self.d2pv (d)
         return self.p2d (self._aas.calcnav (src, d))
 
 
@@ -346,11 +347,11 @@ class bot:
         return pen2doom3units * u
 
     #
-    # getLightPen - get light pen co-ordinates from botaa.py
+    # getAmmoPen - get light pen co-ordinates from botaa.py
     #
 
-    def getLightPen (self, roomNo, lightNo):
-        return self._aas.getLight(roomNo, lightNo)
+    def getAmmoPen (self, roomNo, ammoNo):
+        return self._aas.getAmmo(roomNo, ammoNo)
 
     #
     #  journey - move at velocity, vel, for a distance, dist
@@ -415,21 +416,21 @@ class bot:
         self.reset ()
 
     #
-    # lightJourney - modified version of journey to allow work with light entities
+    # ammoJourney - modified version of journey to allow work with ammo entities
     #
 
-    def lightJourney (self, vel, dist, roomNo, lightNo):
+    def ammoJourney (self, vel, dist, roomNo, ammoNo):
         self.reset ()
         if debugging:
             print "journey along route", self._aas._route
-        dest =  self.getLightPen (roomNo, lightNo)
+        dest =  self.getAmmoPen (roomNo, ammoNo)
         dest = map(int, dest)
         if debugging:
             print "aas.getHop (0) =", self._aas.getHop (0), "my pos =", self.d2pv (self.getpos (self.me ())), "dest =", dest
         #
         #  keep stepping along route as long as the object does not move and we have dist units to move along
         #
-        while (dist > 0) and (vel != 0) and equVec (dest, map(int, self.getLightPen (roomNo, lightNo))) and (not equVec (self._aas.getHop (0), dest)):
+        while (dist > 0) and (vel != 0) and equVec (dest, map(int, self.getAmmoPen (roomNo, ammoNo))) and (not equVec (self._aas.getHop (0), dest)):
             v = subVec (self.d2pv (self.getpos (self.me ())), self._aas.getHop (0))
             hopPos = self._aas.getHop (0)
             hops = 1
@@ -468,7 +469,7 @@ class bot:
         if debugging:
             if dist == 0:
                 print "journey algorithm ran out of distance"
-            elif equVec (dest, map (int, self.getLightPen (roomNo, lightNo))):
+            elif equVec (dest, map (int, self.getAmmoPen (roomNo, ammoNo))):
                 print "journey algorithm reached the goal object"
             elif equVec (self._aas.getHop (0), dest):
                 print "journey algorithm reached intemediate hop"
