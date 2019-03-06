@@ -153,6 +153,12 @@ class bot:
         return [p[0], p[1], p[2]]
 
     #
+    #  health - return the bots health
+    #
+    def health(self):
+        return self._cache.health ()
+
+    #
     #  forward - step forward at velocity, vel, for dist, units.
     #
 

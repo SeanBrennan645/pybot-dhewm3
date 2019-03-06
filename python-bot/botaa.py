@@ -33,7 +33,7 @@ initMapSize = 1
 
 mapdir = os.path.join (os.environ['HOME'], ".local/share/dhewm3/base/maps")
 debugging = False
-debugroute = False
+debugroute = True
 debugmap = False
 
 status_open, status_closed, status_secret = range (3)
@@ -985,7 +985,7 @@ class aas:
     #
 
     def clearOfObstacle (self, v):
-        return (self._floor.get (v[0], v[1]) != '#')# and (self._floor.get (v[0], v[1]) != 'l')
+        return (self._floor.get (v[0], v[1]) != '#') and (self._floor.get (v[0], v[1]) != 'l')
 
     #
     #  _getNeighbours - returns the neighbours of, p.

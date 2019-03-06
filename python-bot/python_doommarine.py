@@ -247,6 +247,7 @@ def botMain (b):
        # if playerDist <= 500:
         #     b.face (you)
          #    fire ()
+       #print "bot health", b.health ()
        time.sleep (0.3)
 
 

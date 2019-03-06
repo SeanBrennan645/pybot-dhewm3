@@ -77,6 +77,14 @@ class cache:
         return self._dict[l]
 
     #
+    # health - return the bots health
+    #
+    def health (self):
+        if not self._dict.has_key ('health'):
+            self._dict['health'] = self._basic.health ()
+        return self._dict['health']
+
+    #
     #  me - return the bots entity, id.
     #
 
