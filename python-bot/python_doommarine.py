@@ -231,6 +231,7 @@ def botMain (b):
     #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
     #getting the total number of rooms within the map
     rooms = b.getRooms()
+    hunt = False
     while True:
 
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
@@ -239,11 +240,21 @@ def botMain (b):
        print "rooms = ", rooms
        for r in range(1, rooms+1):
            ammo = b.getRoomAmmo (r)
-           print "number of ammo in room = ", ammo
-           for l in range(ammo):
-               dest = b.getAmmo(r, l)
-               dest = map (int, dest)
-               ammoTravel(dest, r, l)
+           if not hunt:
+               print "bot moving around map"
+               print "number of ammo in room = ", ammo
+               for l in range(ammo):
+                   dest = b.getAmmo(r, l)
+                   dest = map (int, dest)
+                   ammoTravel(dest, r, l)
+                   playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+                   if playerDist <=500:
+                       hunt = True
+                   if hunt:
+                       break
+       if hunt:
+           print "bot successfully broke out of loop and has begun hunt"
+           huntPlayer(you)
        # if playerDist <= 500:
         #     b.face (you)
          #    fire ()
