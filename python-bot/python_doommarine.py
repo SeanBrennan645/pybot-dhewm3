@@ -2,11 +2,16 @@
 
 import botbasic, time, sys
 import botlib
+from State import State
+from StateMachine import StateMachine
 from chvec import *
 import math
 
 debugTowards = False
 
+class MapTraversal(State):
+    def run(self):
+        print "walking around map"
 
 def walkSquare ():
     b.forward (100, 100)
@@ -100,14 +105,6 @@ def huntPlayer (i):
     b.reset ()
     #getting the dist between player and bot
     playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
-    print "will go and find", i
-    print "I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
-    """
-    if not equVec (b.d2pv (b.getpos (me)), [12, 9]):
-        print "failed to find getpos at 12, 9 for python"
-    if not equVec (b.d2pv (b.getpos (i)), [40, 3]):
-        print "failed to find getpos at 40, 3 for player"
-    """
     if playerDist <= 500:
         #b.aim (i)
         b.face (i)

@@ -33,7 +33,7 @@ initMapSize = 1
 
 mapdir = os.path.join (os.environ['HOME'], ".local/share/dhewm3/base/maps")
 debugging = False
-debugroute = True
+debugroute = False
 debugmap = False
 
 status_open, status_closed, status_secret = range (3)
