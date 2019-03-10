@@ -152,6 +152,18 @@ def ammoTravel (e, r, l):
             print "distance according to dijkstra is", d
         b.ammoJourney (100, d, r, l)
 
+#function to travel around the entire map
+def mapTravel ():
+     rooms = b.getRooms()
+     for r in range(1, rooms+1):
+           ammo = b.getRoomAmmo (r)
+           print "bot moving around map"
+           print "number of ammo in room = ", ammo
+           for l in range(ammo):
+               dest = b.getAmmo(r, l)
+               dest = map (int, dest)
+               ammoTravel(dest, r, l)
+
 
 
 def findAll ():
@@ -234,6 +246,8 @@ def botMain (b):
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
        #huntPlayer (you)
        #moveTowards(you)
+       mapTravel ()
+       """
        print "rooms = ", rooms
        for r in range(1, rooms+1):
            ammo = b.getRoomAmmo (r)
@@ -252,6 +266,7 @@ def botMain (b):
        if hunt:
            print "bot successfully broke out of loop and has begun hunt"
            huntPlayer(you)
+       """
        # if playerDist <= 500:
         #     b.face (you)
          #    fire ()
