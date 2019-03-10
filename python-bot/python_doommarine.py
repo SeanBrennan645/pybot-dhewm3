@@ -12,6 +12,30 @@ debugTowards = False
 class MapTraversal(State):
     def run(self):
         print "walking around map"
+        mapTravel ()
+    def next(self):
+        you = findYou(b)
+        playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+        if playerDist <= 500:
+            return Machine.hunt
+        return Machine.mapTraversal
+
+class Hunt(State):
+    def run(self):
+        print "hunting the player"
+        you = findYou(b)
+        huntPlayer (you)
+    def next(self):
+        return Machine.hunt
+
+class Machine(StateMachine):
+    def __init__(self):
+        StateMachine.__init__(self, Machine.mapTraversal)
+
+Machine.mapTraversal = MapTraversal()
+Machine.hunt = Hunt()
+
+
 
 def walkSquare ():
     b.forward (100, 100)
@@ -153,9 +177,14 @@ def ammoTravel (e, r, l):
         b.ammoJourney (100, d, r, l)
 
 #function to travel around the entire map
+#this version of map travel will stop if the player
+#is within a certain range of the bot
 def mapTravel ():
+     hunt = False
      rooms = b.getRooms()
+     you = findYou (b)
      for r in range(1, rooms+1):
+         if not hunt:
            ammo = b.getRoomAmmo (r)
            print "bot moving around map"
            print "number of ammo in room = ", ammo
@@ -163,6 +192,11 @@ def mapTravel ():
                dest = b.getAmmo(r, l)
                dest = map (int, dest)
                ammoTravel(dest, r, l)
+               playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
+               if playerDist <=500:
+                   hunt = True
+               if hunt:
+                   break
 
 
 
@@ -226,7 +260,7 @@ def execBot (b, useExceptions = True):
     else:
         botMain (b)
 
-
+#note all commented out functions were simply used during testing
 def botMain (b):
     global me
     print "success!  python doom marine is alive"
@@ -239,6 +273,7 @@ def botMain (b):
     #print "you info is this", you
     #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
     #getting the total number of rooms within the map
+    myMachine = Machine
     rooms = b.getRooms()
     hunt = False
     while True:
@@ -246,7 +281,8 @@ def botMain (b):
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
        #huntPlayer (you)
        #moveTowards(you)
-       mapTravel ()
+       myMachine().run()
+       #mapTravel ()
        """
        print "rooms = ", rooms
        for r in range(1, rooms+1):
