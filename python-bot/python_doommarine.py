@@ -9,7 +9,11 @@ import math
 
 debugTowards = False
 
-class MapTraversal(State):
+#
+# state definition for Wander
+# Sean
+
+class Wander(State):
     def run(self):
         print "walking around map"
         mapTravel ()
@@ -17,23 +21,38 @@ class MapTraversal(State):
         you = findYou(b)
         playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
         if playerDist <= 500:
-            return Machine.hunt
-        return Machine.mapTraversal
+            return Machine.attack
+        return Machine.wander
+#
+# state definition for Attack
+# Sean
 
-class Hunt(State):
+class Attack(State):
     def run(self):
-        print "hunting the player"
+        print "attacking the player"
         you = findYou(b)
         huntPlayer (you)
     def next(self):
+        #outline for bot to stop attacking onc health function is fixed
+        """
+        if b.health() <= 40:
+            return Machine.wander
+        """
         return Machine.hunt
+#
+# setting initial state for machine
+# Sean
 
 class Machine(StateMachine):
     def __init__(self):
         StateMachine.__init__(self, Machine.mapTraversal)
 
-Machine.mapTraversal = MapTraversal()
-Machine.hunt = Hunt()
+#
+# adding created states to machine
+# Sean
+
+Machine.wander = Wander()
+Machine.attack = Attack()
 
 
 
@@ -123,8 +142,10 @@ def moveTowards (i):
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
+#
+# basic function that allows the bot the find and fire at the player
+# Sean
 
-#basic function that allows the bot the find and fire at the player
 def huntPlayer (i):
     b.reset ()
     #getting the dist between player and bot
@@ -155,7 +176,11 @@ def huntPlayer (i):
             print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
             print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
-#function to find and travel to a certain ammo postition
+
+#
+# function to find and travel to a certain ammo postition
+# Sean
+
 def ammoTravel (e, r, l):
     b.reset ()
     print "will go and find ammo node"
@@ -176,9 +201,12 @@ def ammoTravel (e, r, l):
             print "distance according to dijkstra is", d
         b.ammoJourney (100, d, r, l)
 
-#function to travel around the entire map
-#this version of map travel will stop if the player
-#is within a certain range of the bot
+#
+# function to travel around the entire map
+# this version of map travel will stop if the player
+# is within a certain range of the bot
+# Sean
+
 def mapTravel ():
      hunt = False
      rooms = b.getRooms()
@@ -198,7 +226,25 @@ def mapTravel ():
                if hunt:
                    break
 
+#
+# function to travel around the entire map
+# this version of map travel will continuously
+# travel around the map
+# Sean
 
+def mapTravelTest ():
+     hunt = False
+     rooms = b.getRooms()
+     you = findYou (b)
+     for r in range(1, rooms+1):
+         if not hunt:
+           ammo = b.getRoomAmmo (r)
+           print "bot moving around map"
+           print "number of ammo in room = ", ammo
+           for l in range(ammo):
+               dest = b.getAmmo(r, l)
+               dest = map (int, dest)
+               ammoTravel(dest, r, l)
 
 def findAll ():
     for i in b.allobj ():
@@ -259,8 +305,10 @@ def execBot (b, useExceptions = True):
             return
     else:
         botMain (b)
+#
+# note all commented out functions were simply used during testing
+# Sean
 
-#note all commented out functions were simply used during testing
 def botMain (b):
     global me
     print "success!  python doom marine is alive"
@@ -281,8 +329,8 @@ def botMain (b):
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
        #huntPlayer (you)
        #moveTowards(you)
-       myMachine().run()
-       #mapTravel ()
+       #myMachine().run()
+       mapTravelTest ()
        """
        print "rooms = ", rooms
        for r in range(1, rooms+1):

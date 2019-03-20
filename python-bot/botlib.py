@@ -71,10 +71,12 @@ class bot:
         self._aas = aas (self.getPenMapName ())
         initPosPen = self._aas.getPlayerStart ()
         initPosD3 = self._cache.getPlayerStart ()
-        #commented out code about lights was used for testing
-        #not nessecary for code to run
-        #lightLoc = self._cache.getLightTest ()
-        #lightPos = lightLoc
+        #
+        # commented out code about lights was used for testing
+        # not nessecary for code to run
+        # Sean
+        # lightLoc = self._cache.getLightTest ()
+        # lightPos = lightLoc
         self._scaleX = float (pen2doom3units)
         self._scaleY = float (pen2doom3units)
         if debugging:
@@ -82,32 +84,37 @@ class bot:
 
     #
     # listLights- was used to get all locs of lights in a room
-    #             not overly useful to use anymore (kept for use in project)
-    #
+    #             not overly useful to use anymore (kept for reference in report)
+    # Sean
+
     def listLights (self):
         return self._aas.printLights()
 
     #
     # getRooms - used to get total number of rooms in a map
-    #
+    # Sean
+
     def getRooms (self):
         return self._aas.getRooms()
 
     #
-    # getRoomAmmo - used to get the total number of lights in a room
-    #
+    # getRoomAmmo - used to get the total number of ammo in a room
+    # Sean
+
     def getRoomAmmo (self, roomNo):
         return self._aas.getRoomAmmo(roomNo)
 
     #
     # getLightPos - reuturns the D3 pos of light
-    #
+    # Sean
+
     def getLightPos (self):
         return lightPos
 
     #
     # getAmmo - returns light pos from botaa
-    #
+    # Sean
+
     def getAmmo (self, room, ammo):
         return self._aas.getAmmo(room, ammo)
 
@@ -266,8 +273,8 @@ class bot:
         return self.p2d (self._aas.calcnav (src, dest))
 
     #
-    # ammoNav - calls calcnav for ammo travel takes in a direct
-    #
+    # ammoNav - calls calcnav for ammo travel takes in a direct Pen Map Location
+    # Sean
 
     def ammoNav (self, d):
         self.reset ()
@@ -354,7 +361,7 @@ class bot:
 
     #
     # getAmmoPen - get light pen co-ordinates from botaa.py
-    #
+    # Sean
 
     def getAmmoPen (self, roomNo, ammoNo):
         return self._aas.getAmmo(roomNo, ammoNo)
@@ -423,7 +430,7 @@ class bot:
 
     #
     # ammoJourney - modified version of journey to allow work with ammo entities
-    #
+    # Sean
 
     def ammoJourney (self, vel, dist, roomNo, ammoNo):
         self.reset ()

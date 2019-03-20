@@ -814,7 +814,8 @@ class aas:
 
     #
     # lightNav - simple modification of calcnav to travel to a light entity
-    #
+    # Sean
+
     def ammoNav (self, src, dest):
         self._neighbours = {}
         self._cost = {}
@@ -1029,7 +1030,7 @@ class aas:
 
     #
     # getAmmo - return the a selected ammo entity in the map
-    #
+    # Sean
 
     def getAmmo (self, r, l):
         if r == 1:
@@ -1056,8 +1057,9 @@ class aas:
 
     #
     # printLights - was used to find all the info on lights within a room
-    #               not overly useful to use anymore unless modified (Kept for use in project)
-    #
+    #               not overly useful to use anymore unless modified (Kept for reference in report)
+    # Sean
+
     def printLights (self):
         print "testing rooms print",  rooms['1']
         for r in rooms.keys ():
@@ -1066,7 +1068,7 @@ class aas:
 
     #
     # getRooms - used to find the total value of all rooms
-    #
+    # Sean
 
     def getRooms (self):
         totalrooms = len(rooms)
@@ -1076,7 +1078,8 @@ class aas:
     # getRoomAmmo - used to find the total value of ammo locations in a room
     #                 CAN ONLY BE USED WITH MAPS WITH MAX OF 10 ROOMS
     #                 this is due to how dict objects are referenced
-    #
+    # Sean
+
     def getRoomAmmo (self, roomNo):
         print "RoomNo is ", roomNo
         totalAmmo = 0
