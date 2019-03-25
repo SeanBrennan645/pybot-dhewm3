@@ -38,14 +38,14 @@ class Attack(State):
         if b.health() <= 40:
             return Machine.wander
         """
-        return Machine.hunt
+        return Machine.attack
 #
 # setting initial state for machine
 # Sean
 
 class Machine(StateMachine):
     def __init__(self):
-        StateMachine.__init__(self, Machine.mapTraversal)
+        StateMachine.__init__(self, Machine.wander)
 
 #
 # adding created states to machine
@@ -93,7 +93,7 @@ def change ():
 #fire function
 def fire ():
         b.startFiring ()
-        time.sleep (1)
+        #time.sleep (1)
         b.reload_weapon ()
 
 def testturn (a):
@@ -151,30 +151,33 @@ def huntPlayer (i):
     #getting the dist between player and bot
     playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
     if playerDist <= 500:
-        #b.aim (i)
-        b.face (i)
+        b.aim (i)
+        #b.face (i)
         fire ()
-    if debugTowards:
-        print "bot is at", b.d2pv (b.getpos (me))
-        print "you are at", b.d2pv (b.getpos (you))
-    d = b.calcnav (i)
-    if debugTowards:
-        print "object", i, "is", d, "units away"
-    if d is None:
-        if debugTowards:
-            print "cannot reach", i
-        b.turn (90, 1)
-        b.select (["turn"])
-        b.forward (50, 50)
-        b.select (["move"])
     else:
+        print "Trying to stop firing"
+        b.stopFiring ()
         if debugTowards:
-            print "distance according to dijkstra is", d
-        b.journey (100, d, i)
+            print "bot is at", b.d2pv (b.getpos (me))
+            print "you are at", b.d2pv (b.getpos (you))
+        d = b.calcnav (i)
         if debugTowards:
-            print "finished my journey to", i
-            print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
-            print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
+            print "object", i, "is", d, "units away"
+        if d is None:
+            if debugTowards:
+                print "cannot reach", i
+            b.turn (90, 1)
+            b.select (["turn"])
+            b.forward (50, 50)
+            b.select (["move"])
+        else:
+            if debugTowards:
+                print "distance according to dijkstra is", d
+            b.journey (100, d, i)
+            if debugTowards:
+                print "finished my journey to", i
+                print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+                print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
 #
@@ -329,8 +332,8 @@ def botMain (b):
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
        #huntPlayer (you)
        #moveTowards(you)
-       #myMachine().run()
-       mapTravelTest ()
+       myMachine().run()
+       #mapTravelTest ()
        """
        print "rooms = ", rooms
        for r in range(1, rooms+1):

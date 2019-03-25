@@ -233,9 +233,9 @@ class cache:
     #                It returns the amount of ammo left.
     #
 
-    def stop_firing (self):
+    def stopFiring (self):
         self.delammo ()
-        return self._basic.stop_firing ()
+        return self._basic.stopFiring ()
 
     #
     #  reload_weapon - reload the current weapon

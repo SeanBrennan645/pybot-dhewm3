@@ -636,6 +636,13 @@ class bot:
         self._cache.startFiring ()
 
     #
+    # stop firing
+    #
+
+    def stopFiring (self):
+        self._cache.stopFiring ()
+
+    #
     #  reset - reset the cache.
     #
 
