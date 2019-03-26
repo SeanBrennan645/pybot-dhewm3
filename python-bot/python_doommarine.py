@@ -15,7 +15,7 @@ debugTowards = False
 
 class Wander(State):
     def run(self):
-        print "walking around map"
+        print "IN WANDER STATE"
         mapTravel ()
     def next(self):
         you = findYou(b)
@@ -29,15 +29,14 @@ class Wander(State):
 
 class Attack(State):
     def run(self):
-        print "attacking the player"
+        print "IN ATTACK STATE"
         you = findYou(b)
         huntPlayer (you)
     def next(self):
         #outline for bot to stop attacking onc health function is fixed
-        """
-        if b.health() <= 40:
-            return Machine.wander
-        """
+        #if b.health() <= 40:
+            #return Machine.wander
+
         return Machine.attack
 #
 # setting initial state for machine
@@ -94,7 +93,7 @@ def change ():
 def fire ():
         b.startFiring ()
         #time.sleep (1)
-        b.reload_weapon ()
+        #b.reload_weapon ()
 
 def testturn (a):
     b.turn (a, 1)
@@ -147,16 +146,16 @@ def moveTowards (i):
 # Sean
 
 def huntPlayer (i):
-    b.reset ()
+    #b.reset ()
     #getting the dist between player and bot
     playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
-    if playerDist <= 500:
+    if playerDist <= 300:
         b.aim (i)
         #b.face (i)
         fire ()
     else:
-        print "Trying to stop firing"
-        b.stopFiring ()
+        #print "Trying to stop firing"
+        #b.stopFiring ()
         if debugTowards:
             print "bot is at", b.d2pv (b.getpos (me))
             print "you are at", b.d2pv (b.getpos (you))
@@ -168,7 +167,7 @@ def huntPlayer (i):
                 print "cannot reach", i
             b.turn (90, 1)
             b.select (["turn"])
-            b.forward (50, 50)
+            b.forward (100, 100)
             b.select (["move"])
         else:
             if debugTowards:
@@ -202,6 +201,7 @@ def ammoTravel (e, r, l):
     else:
         if debugTowards:
             print "distance according to dijkstra is", d
+
         b.ammoJourney (100, d, r, l)
 
 #
@@ -327,14 +327,15 @@ def botMain (b):
     myMachine = Machine
     rooms = b.getRooms()
     hunt = False
-    while True:
+    Machine().runBot()
+    """
+    #while True:
 
        #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
        #huntPlayer (you)
        #moveTowards(you)
-       myMachine().run()
+       #Machine().runBot()
        #mapTravelTest ()
-       """
        print "rooms = ", rooms
        for r in range(1, rooms+1):
            ammo = b.getRoomAmmo (r)
@@ -358,7 +359,7 @@ def botMain (b):
         #     b.face (you)
          #    fire ()
        #print "bot health", b.health ()
-       time.sleep (0.3)
+       #time.sleep (0.3)
 
 
 if len (sys.argv) > 1:

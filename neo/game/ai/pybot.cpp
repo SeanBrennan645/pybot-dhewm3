@@ -61,8 +61,8 @@ Author:  Gaius Mulley  <gaius@gnu.org>
 #include "Trigger.h"
 #include "Game_local.h"
 
-const bool debugging = true;
-const bool protocol_debugging = true;
+const bool debugging = false;
+const bool protocol_debugging = false;
 
 #define S(x) #x
 #define S_(x) S(x)

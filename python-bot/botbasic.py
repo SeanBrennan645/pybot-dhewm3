@@ -31,7 +31,7 @@ from botutils import *
 from socket import *
 
 superServer = 7000
-debug_protocol = True
+debug_protocol = False
 debug_turn = False
 
 
