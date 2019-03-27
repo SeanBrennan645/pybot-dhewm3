@@ -92,7 +92,8 @@ def change ():
 #fire function
 def fire ():
         b.startFiring ()
-        #time.sleep (1)
+        time.sleep (0.3)
+        #b.stopFiring ()
         #b.reload_weapon ()
 
 def testturn (a):
@@ -146,7 +147,7 @@ def moveTowards (i):
 # Sean
 
 def huntPlayer (i):
-    #b.reset ()
+    b.reset ()
     #getting the dist between player and bot
     playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
     if playerDist <= 300:
@@ -155,7 +156,7 @@ def huntPlayer (i):
         fire ()
     else:
         #print "Trying to stop firing"
-        #b.stopFiring ()
+        b.reload_weapon ()
         if debugTowards:
             print "bot is at", b.d2pv (b.getpos (me))
             print "you are at", b.d2pv (b.getpos (you))
@@ -324,7 +325,6 @@ def botMain (b):
     #print "you info is this", you
     #playerDist = abs(b.getpos (me)[0] - b.getpos (you)[0])
     #getting the total number of rooms within the map
-    myMachine = Machine
     rooms = b.getRooms()
     hunt = False
     Machine().runBot()
