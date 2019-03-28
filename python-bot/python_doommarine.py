@@ -92,7 +92,6 @@ def change ():
 #fire function
 def fire ():
         b.startFiring ()
-        time.sleep (0.3)
         #b.stopFiring ()
         #b.reload_weapon ()
 
@@ -148,36 +147,42 @@ def moveTowards (i):
 
 def huntPlayer (i):
     b.reset ()
+    #count added so bot can reload once it run out of ammo
+    count = 0
     #getting the dist between player and bot
     playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
-    if playerDist <= 300:
+    while playerDist <= 300:
         b.aim (i)
         #b.face (i)
         fire ()
+        count = count + 1
+        if count == 16:
+            b.reload_weapon ()
+            count = 0
+        playerDist = abs(b.getpos (me)[0] - b.getpos (i)[0])
+    #print "Trying to stop firing"
+    b.reload_weapon ()
+    if debugTowards:
+        print "bot is at", b.d2pv (b.getpos (me))
+        print "you are at", b.d2pv (b.getpos (you))
+    d = b.calcnav (i)
+    if debugTowards:
+        print "object", i, "is", d, "units away"
+    if d is None:
+        if debugTowards:
+            print "cannot reach", i
+        b.turn (90, 1)
+        b.select (["turn"])
+        b.forward (100, 100)
+        b.select (["move"])
     else:
-        #print "Trying to stop firing"
-        b.reload_weapon ()
         if debugTowards:
-            print "bot is at", b.d2pv (b.getpos (me))
-            print "you are at", b.d2pv (b.getpos (you))
-        d = b.calcnav (i)
+            print "distance according to dijkstra is", d
+        b.journey (100, d, i)
         if debugTowards:
-            print "object", i, "is", d, "units away"
-        if d is None:
-            if debugTowards:
-                print "cannot reach", i
-            b.turn (90, 1)
-            b.select (["turn"])
-            b.forward (100, 100)
-            b.select (["move"])
-        else:
-            if debugTowards:
-                print "distance according to dijkstra is", d
-            b.journey (100, d, i)
-            if debugTowards:
-                print "finished my journey to", i
-                print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
-                print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
+            print "finished my journey to", i
+            print "  result is that I'm currently at", b.getpos (me), "and", i, "is at", b.getpos (i)
+            print "      penguin tower coords I'm at", b.d2pv (b.getpos (me)), "and", i, "is at", b.d2pv (b.getpos (i))
 
 
 #
