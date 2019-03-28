@@ -4,6 +4,9 @@
 This fork of the pybot is being used to assist in research of human-like AI 
 and attempt to further expand on the original pybot for a final year project.<br/>
 The original pybot this version is based from can be found at (https://github.com/gaiusm/pybot-dhewm3)
+FOR SUPERVISORS!
+This project was created using the university Linux machines in J109 installation notes for running on these machines can be found here (http://floppsie.comp.glam.ac.uk/Southwales/gaius/gameengine/35.html) where the name to run this project will be needed to be used where the original pybot is stated.
+There is also insructions for home machines found here (http://floppsie.comp.glam.ac.uk/Southwales/gaius/gameengine/doom3-install.html)
 
 _pybot-dhewm3_ is a fork of the dhewm3 project.  It is experimental code
 to demonstrate and develop python bots within doom3.  The python bots
